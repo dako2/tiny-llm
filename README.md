@@ -1,3 +1,9 @@
+
+# Notes:
+https://blog.kkkzoz.top/posts/learning/deep-learning-basic/#saving-and-loading-models
+
+
+
 # tiny-llm - LLM Serving in a Week
 
 [![CI (main)](https://github.com/skyzh/tiny-llm/actions/workflows/main.yml/badge.svg)](https://github.com/skyzh/tiny-llm/actions/workflows/main.yml)
