@@ -2,7 +2,6 @@ import mlx.core as mx
 from typing import Any
 from extensions_ref import tiny_llm_ext_ref
 
-
 class QuantizedWeights:
     def __init__(
         self,
@@ -27,7 +26,6 @@ class QuantizedWeights:
             bits=mlx_layer.bits,
             weight=mlx_layer.weight,
         )
-
 
 def quantized_linear(
     x: mx.array,
