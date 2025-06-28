@@ -101,11 +101,18 @@ class Qwen2MLP:
         w_up: mx.array,
         w_down: mx.array,
     ):
-        pass
+        """
+        MLP(x)=(SiLU(W gate(x)) ⊙ Wup (x)) W_down
+        
+        """
+        self.w_gate = w_gate
+        self.w_down = w_down
+        self.w_up = w_up
+        self.dim = dim 
+        self.hidden_dim = hidden_dim
 
     def __call__(self, x: mx.array) -> mx.array:
-        pass
-
+        return linear(silu(linear(x, self.w_gate)) * linear(x, self.w_up), self.w_down)
 
 class Qwen2TransformerBlock:
     def __init__(
@@ -130,7 +137,33 @@ class Qwen2TransformerBlock:
         max_seq_len: int = 32768,
         theta: int = 1000000,
     ):
-        pass
+        
+        self.intermediate_size = intermediate_size
+        self.w_gate = w_gate 
+        self.w_up = w_up 
+        self.w_down = w_down 
+        self.w_post_attention_layernorm = w_post_attention_layernorm
+        
+        self.input_layernorm = RMSNorm(hidden_size, w_input_layernorm, eps=rms_norm_eps)
+        self.post_attention_layernorm = RMSNorm(
+            hidden_size, w_post_attention_layernorm, eps=rms_norm_eps
+        )
+
+        self.self_atten = Qwen2MultiHeadAttention(
+                        hidden_size=hidden_size,
+                        num_heads=num_attention_heads,
+                        num_kv_heads=num_kv_heads,
+                        wq=wq,
+                        wk=wk,
+                        wv=wv,
+                        wo=wo,
+                        bq=bq,
+                        bk=bk,
+                        bv=bv,
+                        max_seq_len=max_seq_len,
+                        theta=theta
+                    )
+        self.mlp = Qwen2MLP(-1, intermediate_size, w_gate, w_up, w_down)
 
     def __call__(
         self,
@@ -138,7 +171,13 @@ class Qwen2TransformerBlock:
         offset: int,
         mask: mx.array | str | None = None,
     ) -> mx.array:
-        pass
+    
+        x1 = self.input_layernorm(x)
+        r = self.self_atten(x1, offset, mask)
+        h = x + r
+        x2 = self.post_attention_layernorm(h)
+        out = self.mlp(x2) + h
+        return out
 
 
 class Qwen2ModelWeek1:

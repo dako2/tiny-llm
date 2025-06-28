@@ -125,6 +125,7 @@ class Qwen2TransformerBlock:
         self.post_attention_layernorm = RMSNorm(
             hidden_size, w_post_attention_layernorm, eps=rms_norm_eps
         )
+        
         self.self_attn = Qwen2MultiHeadAttention(
             num_heads=num_attention_heads,
             hidden_size=hidden_size,
