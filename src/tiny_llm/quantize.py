@@ -38,7 +38,6 @@ class QuantizedWeights:
             weight=mlx_layer.weight,
         )
 
-
 def quantized_matmul(
     scales: mx.array,
     biases: mx.array,
@@ -48,12 +47,10 @@ def quantized_matmul(
     b: mx.array,
     transpose_b: bool = False,
 ) -> mx.array:
-    pass
-
-
-def quantized_linear(
-    x: mx.array,
-    w: QuantizedWeights,
-    bias: mx.array | None = None,
-) -> mx.array:
-    pass
+    *N, D = a.shape
+    a = a.reshape(-1, D)
+    a = mx.contiguous(a)
+    b = mx.contiguous(b)
+    return tiny_llm_ext_ref.quantized_matmul(
+        scales, biases, group_size, bits, a, b, transpose_b
+    ).reshape(*N, -1)
