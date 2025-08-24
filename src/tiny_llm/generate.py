@@ -11,13 +11,15 @@ def simple_generate(
     prompt: str,
     sampler: Callable[[mx.array], mx.array] | None,
 ) -> str:
-    pass
+    def _step(model, y):
+        pass
 
 
 def simple_generate_with_kv_cache(
     model: Qwen2ModelWeek2, tokenizer: TokenizerWrapper, prompt: str
 ) -> str:
-    pass
+    def _step(model, y, offset, kv_cache):
+        pass
 
 
 def batch_generate(
